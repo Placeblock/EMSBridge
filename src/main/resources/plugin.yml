@@ -1,0 +1,7 @@
+name: EMSBridge
+version: 1.0.0
+main: de.codelix.emsbridge.EMSBridge
+description: Links EMS with Minecraft UUIDs
+author: Placeblock
+website: https://codelix.de
+api-version: '1.21.4'
