@@ -26,4 +26,7 @@ dependencies {
 
     // EMS
     implementation("de.codelix:entity-management-system:1.0-SNAPSHOT")
+
+    // MySQL
+    implementation("com.zaxxer:HikariCP:6.2.1")
 }
