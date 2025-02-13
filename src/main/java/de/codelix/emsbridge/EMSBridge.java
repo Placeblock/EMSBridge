@@ -1,5 +1,6 @@
 package de.codelix.emsbridge;
 
+import de.codelix.emsbridge.command.impl.RegisterCommand;
 import de.codelix.emsbridge.listener.PlayerListener;
 import de.codelix.emsbridge.storage.EntityPlayerRepository;
 import lombok.Getter;
@@ -29,6 +30,9 @@ public class EMSBridge extends JavaPlugin {
 
         this.repository = new EntityPlayerRepository(this.cfg.getDb());
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        PlayerListener playerListener = new PlayerListener(this.repository, this.entityMap);
+        this.getServer().getPluginManager().registerEvents(playerListener, this);
+
+        new RegisterCommand(this).register();
     }
 }

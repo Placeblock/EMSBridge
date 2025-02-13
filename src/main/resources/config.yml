@@ -4,4 +4,26 @@ db:
   database: DB
   username: USER
   password: PASSWORD
-  createForeignKeyEMS: true
+
+books:
+  introduction:
+    title: Nostalgicraft
+    author: Felix
+    pages:
+      - >
+        The ground trembles beneath your feet when you open your 
+        eyes to the realms that lie beyond the ordinary. Curious 
+        about where this strange noise is coming from you observe 
+        your surroundings and something seems... well... off.
+      - >
+        Everything you see looks strange and somewhere in the back 
+        of your head, you know that you've seen this mysterious place 
+        before.
+      - >
+        *Click* - Ahhh, now everything makes sense. This is Minecraft!
+        That's why everything looks so chunky! Haven't played that for a long
+        time, have I? It's definitely time to experience this adventure again!
+      - >
+        And while you stare at the beautiful cave that surrounds you the
+        colorful word "Nostalgicraft" appears on your screen.
+        Be curious, adventurer - and - have fun!

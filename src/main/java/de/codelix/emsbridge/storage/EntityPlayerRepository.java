@@ -20,9 +20,6 @@ public class EntityPlayerRepository {
         this.ds = new HikariDataSource(config);
         try {
             this.createTable();
-            if (dbConfig.getCreateForeignKeyEMS()) {
-                this.createForeignKey();
-            }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not initialize Database", e);
         }
@@ -31,17 +28,11 @@ public class EntityPlayerRepository {
     private void createTable() throws SQLException {
         try(PreparedStatement stmt = this.ds.getConnection().prepareStatement("""
                 CREATE TABLE IF NOT EXISTS ems_mc_players (
-                    player_uuid VARCHAR(36) NOT NULL PRIMARY KEY,
-                    entity_id VARCHAR(16) NOT NULL UNIQUE
+                    player_uuid VARCHAR(36) NOT NULL UNIQUE,
+                    entity_id BIGINT(20) UNSIGNED NOT NULL,
+                    PRIMARY KEY (entity_id),
+                    FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE CASCADE
                 );
-            """)) {
-            stmt.execute();
-        }
-    }
-
-    private void createForeignKey() throws SQLException {
-        try(PreparedStatement stmt = this.ds.getConnection().prepareStatement("""
-                ALTER TABLE ems_mc_players ADD FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE CASCADE;
             """)) {
             stmt.execute();
         }
