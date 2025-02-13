@@ -29,4 +29,8 @@ dependencies {
 
     // MySQL
     implementation("com.zaxxer:HikariCP:6.2.1")
+
+    // Commands
+    implementation("de.codelix.commandapi:core:4.0.0-SNAPSHOT")
+    implementation("de.codelix.commandapi:paper:4.0.0-SNAPSHOT")
 }
