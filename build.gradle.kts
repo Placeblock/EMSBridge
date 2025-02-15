@@ -42,7 +42,6 @@ dependencies {
 
     // GUI
     implementation("de.codelix:BetterInventories:2.2.1")
-    implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
 }
 
 

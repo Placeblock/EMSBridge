@@ -1,54 +1,51 @@
 package de.codelix.emsbridge.command.impl;
 
-import de.codelix.commandapi.core.parameter.impl.WordParameter;
 import de.codelix.commandapi.paper.DefaultPaperSource;
 import de.codelix.commandapi.paper.PlayerPaperCommand;
 import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
 import de.codelix.emsbridge.command.messages.EMSDesign;
-import de.codelix.emsbridge.util.Util;
-import net.wesjd.anvilgui.AnvilGUI;
+import de.codelix.emsbridge.command.parameters.EntityNameParameter;
+import de.codelix.emsbridge.exceptions.EntityLoadException;
+import de.codelix.emsbridge.exceptions.PlayerAlreadyRegisteredException;
+import de.codelix.emsbridge.gui.NameInputGUI;
+import de.codelix.emsbridge.messages.Messages;
+import de.codelix.emsbridge.service.EntityService;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Collections;
-import java.util.List;
 
 public class RegisterCommand extends PlayerPaperCommand {
     private final JavaPlugin plugin;
+    private final EntityService entityService;
 
-    public RegisterCommand(JavaPlugin plugin) {
-        super(plugin, "register", false, new EMSDesign<>());
+    public RegisterCommand(JavaPlugin plugin, EntityService entityService) {
+        super(plugin, "register", true, new EMSDesign<>());
         this.plugin = plugin;
+        this.entityService = entityService;
     }
 
     @Override
     public void build(DefaultPaperLiteralBuilder<DefaultPaperSource, Player> builder) {
         builder
-        .then(this.factory().argument("name", new WordParameter<>())
-            .runPlayer((Player p, String name) -> {
+            .description("Creates a new Nostalgicraft Account")
+            .then(this.factory().argument("name", new EntityNameParameter<>())
+                    .runPlayer((Player p, String name) -> this.register(p, name))
+            )
+            .runPlayer(p -> new NameInputGUI(this.plugin, p, "register", name -> this.register(p, name)).show());
+    }
 
-            })
-        )
-        .runPlayer(p -> {
-            AnvilGUI gui = new AnvilGUI.Builder()
-                    .title("Enter Project Name")
-                    .preventClose()
-                    .text("Your Name")
-                    .plugin(this.plugin)
-                    .onClick((slot, stateSnapshot) -> {
-                        if (slot != AnvilGUI.Slot.OUTPUT) {
-                            return Collections.emptyList();
-                        }
-                        String name = stateSnapshot.getText();
-                        try {
-                            Util.validateEntityName(name);
-                            return List.of(AnvilGUI.ResponseAction.close());
-                        } catch (IllegalArgumentException _) {
-                            return Collections.emptyList();
-                        }
-                    })
-                    .open(p);
-            }
-        );
+    private void register(Player p, String name) {
+        try {
+            this.entityService.createEntity(p.getUniqueId(), name);
+            p.sendMessage(Messages.ENTITY_CREATED(name));
+        } catch (EntityLoadException e) {
+            p.sendMessage(Messages.ERROR_CHECK_REGISTERED(name));
+            throw e;
+        } catch (PlayerAlreadyRegisteredException e) {
+            p.sendMessage(Messages.ERROR_ALREADY_REGISTERED);
+        } catch (RuntimeException e) {
+            p.sendMessage(Messages.ERROR_CREATE_ENTITY);
+            throw e;
+        }
     }
 }

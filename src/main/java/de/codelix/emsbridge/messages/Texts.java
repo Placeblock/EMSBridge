@@ -1,4 +1,4 @@
-package de.codelix.emsbridge.minimessage;
+package de.codelix.emsbridge.messages;
 
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
