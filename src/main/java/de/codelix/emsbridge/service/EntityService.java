@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,6 +29,10 @@ public class EntityService {
     }
     public void removeOnlinePlayer(UUID playerUuid) {
         this.entityPlayerMap.removePlayer(playerUuid);
+    }
+
+    public List<Entity> getEntities() {
+        return this.ems.getEntities().join();
     }
 
     public Entity getEntity(final int id) {
@@ -69,6 +74,7 @@ public class EntityService {
         if (player != null) {
             this.renameEntityLocal(player, Texts.text(newName), null);
         }
+        this.entityPlayerMap.addPlayer(playerUuid, entity.getId());
         return entity;
     }
 
@@ -112,15 +118,15 @@ public class EntityService {
         return this.entityPlayerMap.getEntityId(playerUuid);
     }
 
-    public @NotNull UUID getPlayerUuid(int entityId) {
-        UUID playerUuid = this.getPlayerUuidNullable(entityId);
+    public @NotNull UUID getPlayerUuidLocal(int entityId) {
+        UUID playerUuid = this.getPlayerUuidNullableLocal(entityId);
         if (playerUuid == null) {
             throw new PlayerNotRegisteredException(playerUuid);
         }
         return playerUuid;
     }
 
-    public @Nullable UUID getPlayerUuidNullable(int entityId) {
+    public @Nullable UUID getPlayerUuidNullableLocal(int entityId) {
         return this.entityPlayerMap.getPlayerUUID(entityId);
     }
 }

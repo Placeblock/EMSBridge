@@ -1,5 +1,6 @@
 package de.codelix.emsbridge.service;
 
+import de.codelix.emsbridge.exceptions.NoTeamException;
 import de.codelix.emsbridge.messages.Texts;
 import de.codelix.entitymanagementsystem.EMS;
 import de.codelix.entitymanagementsystem.dto.TeamCreateData;
@@ -31,13 +32,25 @@ public class TeamService {
         if (entityId == null) return null;
         return this.getTeam(entityId);
     }
-    public Team getTeamLocal(UUID playerUuid) {
+    public Team getTeamByLocalPlayerUuid(UUID playerUuid) {
         Integer entityId = this.entityService.getEntityIdNullableLocal(playerUuid);
         if (entityId == null) return null;
         return this.getTeam(entityId);
     }
     public Team getTeam(int entityId) {
         return this.ems.getTeamByEntityId(entityId).join();
+    }
+    public List<MemberInvite> getInvites(int entityId) {
+        return this.ems.getInvitesByEntityId(entityId).join();
+    }
+    public List<Member> getMembers() {
+        return this.ems.getMembers().join();
+    }
+    public Member getMember(int memberId) {
+        return this.ems.getMember(memberId).join();
+    }
+    public Member getMemberByEntityId(int entityId) {
+        return this.ems.getMemberByEntityId(entityId).join();
     }
 
     public TeamCreateData createTeam(final String name, final float hue, UUID creator) {
@@ -53,6 +66,9 @@ public class TeamService {
     public void renameTeam(final UUID playerUuid, String newName) {
         int entityId = this.entityService.getEntityIdLocal(playerUuid);
         Member member = this.ems.getMemberByEntityId(entityId).join();
+        if (member == null) {
+            throw new NoTeamException();
+        }
         this.ems.renameTeam(member.getTeamId(), newName).join();
     }
 
@@ -63,7 +79,16 @@ public class TeamService {
     }
 
     public void inviteEntity(UUID inviterUuid, int invitedId) {
-        this.ems.createInvite(new MemberInvite()).join();
+        int inviterId = this.entityService.getEntityIdLocal(inviterUuid);
+        Integer inviterMemberId = this.getMemberByEntityId(inviterId).getId();
+        if (inviterMemberId == null) {
+            throw new NoTeamException();
+        }
+        this.ems.createInvite(MemberInvite.builder()
+                .inviterId(inviterMemberId)
+                .invitedId(invitedId)
+                .build())
+        .join();
     }
 
     public void acceptInvite(MemberInvite invite) {
@@ -79,7 +104,7 @@ public class TeamService {
         this.addPlayerToTeamLocal(entityId, team);
     }
     public void addPlayerToTeamLocal(int entityId, Team team) {
-        UUID playerUuid = this.entityService.getPlayerUuidNullable(entityId);
+        UUID playerUuid = this.entityService.getPlayerUuidNullableLocal(entityId);
         if (playerUuid == null) return;
         Player player = Bukkit.getPlayer(playerUuid);
         if (player == null) return;
@@ -108,7 +133,7 @@ public class TeamService {
     public void updateTeamLocal(Team team) {
         List<Member> members = this.ems.getMembers(team.getId()).join();
         for (Member member : members) {
-            UUID playerUuid = this.entityService.getPlayerUuidNullable(member.getEntityId());
+            UUID playerUuid = this.entityService.getPlayerUuidNullableLocal(member.getEntityId());
             if (playerUuid == null) continue;
             Player player = Bukkit.getPlayer(playerUuid);
             this.createOrUpdatePlayerBukkitTeam(member.getEntityId(), team, player);

@@ -7,6 +7,7 @@ import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
 import de.codelix.emsbridge.command.parameters.EntityInviteParameter;
 import de.codelix.emsbridge.command.parameters.EntityNotTeamParameter;
 import de.codelix.emsbridge.command.parameters.TeamNameParameter;
+import de.codelix.emsbridge.exceptions.NoTeamException;
 import de.codelix.emsbridge.gui.ColorGUI;
 import de.codelix.emsbridge.gui.NameInputGUI;
 import de.codelix.emsbridge.messages.Messages;
@@ -24,7 +25,7 @@ public class TeamCommand extends PlayerPaperCommand {
     private final TeamService teamService;
 
     public TeamCommand(Plugin plugin, EntityService entityService, TeamService teamService) {
-        super(plugin, "teams", false);
+        super(plugin, "team", false);
         this.entityService = entityService;
         this.teamService = teamService;
     }
@@ -100,6 +101,8 @@ public class TeamCommand extends PlayerPaperCommand {
             try {
                 this.teamService.renameTeam(p.getUniqueId(), name);
                 p.sendMessage(Messages.TEAM_RENAMED(name));
+            } catch (NoTeamException ex) {
+                p.sendMessage(Messages.ERROR_NO_TEAM);
             } catch (RuntimeException ex) {
                 p.sendMessage(Messages.ERROR_RENAME_TEAM);
                 throw ex;
@@ -139,6 +142,8 @@ public class TeamCommand extends PlayerPaperCommand {
                 try {
                     this.teamService.recolorTeam(p.getUniqueId(), hue);
                     p.sendMessage(Messages.TEAM_RECOLORED(hue));
+                } catch (NoTeamException ex) {
+                    p.sendMessage(Messages.ERROR_NO_TEAM);
                 } catch (RuntimeException ex) {
                     p.sendMessage(Messages.ERROR_RECOLOR_TEAM);
                     throw ex;

@@ -46,6 +46,7 @@ public class PlayerListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_FULL, Messages.ERROR_LOAD_ENTITY);
             throw new RuntimeException(e);
         }
+        EMSBridge.INSTANCE.getLogger().info("Loaded Player " + uuid + " with team " + team + " and entity " + entity);
         this.tmpTeams.put(uuid, team);
         this.tmpEntities.put(uuid, entity);
     }
@@ -95,7 +96,7 @@ public class PlayerListener implements Listener {
             Component result = sourceDisplayName.color(NamedTextColor.GRAY)
                     .append(Texts.text("<color:gray> > "))
                     .append(message);
-            Team team = this.teamService.getTeamLocal(source.getUniqueId());
+            Team team = this.teamService.getTeamByLocalPlayerUuid(source.getUniqueId());
             if (team == null) return result;
             Component prefix = TeamService.getTeamPrefix(team.getName(), TeamService.getTeamColor(team.getHue()));
             return prefix.append(result);

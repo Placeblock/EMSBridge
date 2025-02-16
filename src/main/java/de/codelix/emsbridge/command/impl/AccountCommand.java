@@ -39,7 +39,9 @@ public class AccountCommand extends PlayerPaperCommand {
                             ep.sendMessage(Texts.text("<click:run_command:/account rename><b><color:green>[TRY AGAIN]</color></b></click>"));
                             return;
                         }
-                        this.rename(ep, name);
+                        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () ->
+                            this.rename(ep, name));
+                        ep.closeInventory();
                     }
                 ).showPlayer(ep))
             )
