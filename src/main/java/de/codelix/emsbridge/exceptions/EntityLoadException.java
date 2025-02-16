@@ -1,15 +1,16 @@
 package de.codelix.emsbridge.exceptions;
 
-import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class EntityLoadException extends RuntimeException {
-    private final UUID playerUuid;
-    public EntityLoadException(UUID playerUuid) {
-        super("Could not load entity for Player with UUID " + playerUuid);
-        this.playerUuid = playerUuid;
+    private final int entityId;
+    public EntityLoadException(int entityId) {
+        super("Could not load entity with entity id " + entityId);
+        this.entityId = entityId;
     }
-    public EntityLoadException(UUID playerUuid, Throwable cause) {
-        super("Could not load entity for Player with UUID" + playerUuid, cause);
-        this.playerUuid = playerUuid;
+    public EntityLoadException(int entityId, Throwable cause) {
+        super("Could not load entity with entity id" + entityId, cause);
+        this.entityId = entityId;
     }
 }

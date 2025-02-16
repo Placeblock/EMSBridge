@@ -1,5 +1,6 @@
 package de.codelix.emsbridge.command.impl;
 
+import de.codelix.commandapi.core.exception.ParseException;
 import de.codelix.commandapi.paper.DefaultPaperSource;
 import de.codelix.commandapi.paper.PlayerPaperCommand;
 import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
@@ -9,7 +10,9 @@ import de.codelix.emsbridge.exceptions.EntityLoadException;
 import de.codelix.emsbridge.exceptions.PlayerAlreadyRegisteredException;
 import de.codelix.emsbridge.gui.NameInputGUI;
 import de.codelix.emsbridge.messages.Messages;
+import de.codelix.emsbridge.messages.Texts;
 import de.codelix.emsbridge.service.EntityService;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,13 +34,24 @@ public class RegisterCommand extends PlayerPaperCommand {
             .then(this.factory().argument("name", new EntityNameParameter<>())
                     .runPlayer((Player p, String name) -> this.register(p, name))
             )
-            .runPlayer(p -> new NameInputGUI(this.plugin, p, "register", name -> this.register(p, name)).show());
+            .runPlayer(p -> Bukkit.getScheduler().runTask(this.plugin, () -> new NameInputGUI(this.plugin, Texts.text("Enter Player Name"),
+                        p, name -> {
+                    try {
+                        EntityNameParameter.validateName(name);
+                    } catch (ParseException e) {
+                        p.sendMessage(this.getDesign().getMessages().getMessage(e));
+                        p.sendMessage(Texts.text("<click:run_command:/register><b><color:green>[TRY AGAIN]</color></b></click>"));
+                        return;
+                    }
+                    this.register(p, name);
+                }).showPlayer(p))
+            );
     }
 
     private void register(Player p, String name) {
         try {
             this.entityService.createEntity(p.getUniqueId(), name);
-            p.sendMessage(Messages.ENTITY_CREATED(name));
+            p.sendMessage(Messages.ENTITY_CREATED);
         } catch (EntityLoadException e) {
             p.sendMessage(Messages.ERROR_CHECK_REGISTERED(name));
             throw e;

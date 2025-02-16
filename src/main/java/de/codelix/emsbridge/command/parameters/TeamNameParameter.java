@@ -15,10 +15,14 @@ public class TeamNameParameter implements Parameter<String, DefaultPaperSource, 
     @Override
     public String parse(ParseContext<DefaultPaperSource, TextComponent> ctx, ParsedCommand<DefaultPaperSource, TextComponent> cmd) throws ParseException {
         String name = ctx.getInput().poll();
+        validateName(name);
+        return name;
+    }
+
+    public static void validateName(String name) throws NameTooShortException, NameOnlyLettersException {
         if (name.length() < 3) throw new NameTooShortException(name, 3);
         if (name.length() > 8) throw new NameTooShortException(name, 8);
         if (!name.matches("[a-zA-Z]+")) throw new NameOnlyLettersException(name);
-        return name;
     }
 
     @Override
