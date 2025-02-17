@@ -140,6 +140,12 @@ public class TeamService {
         }
     }
 
+    public void sendMessage(UUID playerUuid, String message) {
+        int entityId = this.entityService.getEntityIdLocal(playerUuid);
+        Member member = this.getMemberByEntityId(entityId);
+        this.ems.sendMessage(member.getId(), message).join();
+    }
+
     public static @NotNull TextColor getTeamColor(float hue) {
         return TextColor.color(HSVLike.hsvLike(hue, 0.7F, 0.5F));
     }
@@ -153,4 +159,5 @@ public class TeamService {
     private static @NotNull String getPlayerBukkitTeamName(int entityId) {
         return "team-" + entityId;
     }
+
 }
