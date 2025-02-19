@@ -13,11 +13,11 @@ import java.util.UUID;
 public class EntityPlayerRepository {
     private final HikariDataSource ds;
 
-    public EntityPlayerRepository(Config.DB dbConfig) {
+    public EntityPlayerRepository(Config.SqlDB sqlDbConfig) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://" + dbConfig.getHost() + ":" + dbConfig.getPort() + "/" + dbConfig.getDatabase());
-        config.setUsername(dbConfig.getUsername());
-        config.setPassword(dbConfig.getPassword());
+        config.setJdbcUrl("jdbc:mysql://" + sqlDbConfig.getHost() + ":" + sqlDbConfig.getPort() + "/" + sqlDbConfig.getDatabase());
+        config.setUsername(sqlDbConfig.getUsername());
+        config.setPassword(sqlDbConfig.getPassword());
         this.ds = new HikariDataSource(config);
         try {
             this.createTable();

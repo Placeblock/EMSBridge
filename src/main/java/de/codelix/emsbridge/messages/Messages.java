@@ -21,6 +21,8 @@ public class Messages {
     public static final Component ERROR_RENAME_ENTITY = Texts.text("<color:gray>Could not rename Account. ").append(REPORT);
     public static final Component ENTITY_CREATED = Texts.text("<color:gray>Du hast dich <color:green>erfolgreich angemeldet<color:gray>");
 
+    public static final Component ERROR_SEND_TEAM_MESSAGE = Texts.text("<color:gray>Could not send Message. ").append(REPORT);
+
     public static final Component ERROR_NO_TEAM = Texts.text("<color:gray>You are <color:red>not in any team<color:gray>.");
     public static final Component ERROR_CREATE_TEAM = Texts.text("<color:red>Could not create Team<color:gray>. ").append(REPORT);
     public static Component TEAM_CREATED(String name, float hue) {
@@ -66,4 +68,13 @@ public class Messages {
     public static Component INVITE_DECLINED_INVITER(String invitedName) {
         return Texts.text("<color:blue>" + invitedName + " <color:red>declined <color:gray>your Team-Invite.");
     }
+
+    public static Component TEAM_MESSAGE(String player, String message) {
+        return Texts.text("<color:green>TEAM <color:gray>| "+player+" > " + message);
+    }
+
+    public static Component PIN_MESSAGE(String pin) {
+        return Texts.text("<color:green>Pin generated<color:gray>! <color:blue><click:copy_to_clipboard:" + pin + ">[COPY TO CLIPBOARD]</click></color>");
+    }
+    public static final Component ERROR_CREATE_PIN = Texts.text("<color:gray>Could not create Pin. ").append(REPORT);
 }

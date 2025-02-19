@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -92,5 +93,20 @@ public class ZeromqListener extends EMSListener {
     @Override
     protected void onTeamRecolor(TeamRecolorAction action) {
         this.teamService.updateTeamLocal(action.getData());
+    }
+
+    @Override
+    protected void onTeamMessage(TeamMessageAction action) {
+        Member member = action.getData().getMember();
+        Integer teamId = member.getTeamId();
+        List<Member> members = this.teamService.getMembers(teamId);
+        for (Member teamMember : members) {
+            Integer entityId = teamMember.getEntityId();
+            UUID playerUuid = this.entityService.getPlayerUuidNullableLocal(entityId);
+            if (playerUuid == null) continue;
+            Player player = Bukkit.getPlayer(playerUuid);
+            if (player == null) continue;
+            player.sendMessage(Messages.TEAM_MESSAGE(member.getEntity().getName(), action.getData().getMessage()));
+        }
     }
 }

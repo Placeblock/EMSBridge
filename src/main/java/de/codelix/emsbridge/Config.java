@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public class Config {
-    private final DB db;
+    private final SqlDB sqlDb;
     private final Books books;
 
     public Config(ConfigurationSection section) {
@@ -23,7 +23,7 @@ public class Config {
         if (books == null) {
             throw new IllegalArgumentException("Books configuration not found");
         }
-        this.db = new DB(db);
+        this.sqlDb = new SqlDB(db);
         this.books = new Books(books);
     }
 
@@ -58,14 +58,14 @@ public class Config {
     }
 
     @Getter
-    public static class DB {
+    public static class SqlDB {
         private final String host;
         private final String port;
         private final String database;
         private final String username;
         private final String password;
 
-        public DB(ConfigurationSection section) {
+        public SqlDB(ConfigurationSection section) {
             this(
                     section.getString("host"),
                     section.getString("port"),
@@ -75,7 +75,7 @@ public class Config {
             );
         }
 
-        public DB(String host, String port, String database, String username, String password) {
+        public SqlDB(String host, String port, String database, String username, String password) {
             this.host = host;
             this.port = port;
             this.database = database;
@@ -96,6 +96,50 @@ public class Config {
             }
             if (this.password == null) {
                 throw new IllegalArgumentException("Missing required configuration: password");
+            }
+        }
+    }
+
+    @Getter
+    public static class InfluxDB {
+        private final String host;
+        private final String port;
+        private final String organization;
+        private final String token;
+        private final String bucket;
+
+        public InfluxDB(ConfigurationSection section) {
+            this(
+                section.getString("host"),
+                section.getString("port"),
+                section.getString("organization"),
+                section.getString("token"),
+                section.getString("bucket")
+            );
+        }
+
+        public InfluxDB(String host, String port, String organization, String token, String bucket) {
+            this.host = host;
+            this.port = port;
+            this.organization = organization;
+            this.token = token;
+            this.bucket = bucket;
+
+
+            if (this.host == null) {
+                throw new IllegalArgumentException("Missing required configuration: host");
+            }
+            if (this.port == null) {
+                throw new IllegalArgumentException("Missing required configuration: port");
+            }
+            if (this.organization == null) {
+                throw new IllegalArgumentException("Missing required configuration: organization");
+            }
+            if (this.token == null) {
+                throw new IllegalArgumentException("Missing required configuration: token");
+            }
+            if (this.bucket == null) {
+                throw new IllegalArgumentException("Missing required configuration: bucket");
             }
         }
     }

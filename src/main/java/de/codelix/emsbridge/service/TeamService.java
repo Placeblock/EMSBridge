@@ -46,6 +46,9 @@ public class TeamService {
     public List<Member> getMembers() {
         return this.ems.getMembers().join();
     }
+    public List<Member> getMembers(int teamId) {
+        return this.ems.getMembers(teamId).join();
+    }
     public Member getMember(int memberId) {
         return this.ems.getMember(memberId).join();
     }

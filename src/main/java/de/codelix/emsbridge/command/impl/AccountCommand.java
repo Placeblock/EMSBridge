@@ -9,6 +9,7 @@ import de.codelix.emsbridge.gui.NameInputGUI;
 import de.codelix.emsbridge.messages.Messages;
 import de.codelix.emsbridge.messages.Texts;
 import de.codelix.emsbridge.service.EntityService;
+import de.codelix.entitymanagementsystem.models.Token;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -45,6 +46,20 @@ public class AccountCommand extends PlayerPaperCommand {
                     }
                 ).showPlayer(ep))
             )
+        )
+        .then(this.factory().literal("link")
+            .description("Links another account to your Nostalgicraft Account (For example Discord)")
+            .runPlayer(p -> {
+                Integer entityId = this.entityService.getEntityIdNullableLocal(p.getUniqueId());
+                Token token;
+                try {
+                    token = this.entityService.requestToken(entityId);
+                } catch (RuntimeException e) {
+                    p.sendMessage(Messages.ERROR_CREATE_PIN);
+                    throw e;
+                }
+                p.sendMessage(Messages.PIN_MESSAGE(token.getPin()));
+            })
         );
     }
 
