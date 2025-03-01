@@ -1,4 +1,4 @@
-package de.codelix.emsbridge.motd;
+package de.codelix.emsbridge.listener;
 
 import de.codelix.emsbridge.EMSBridge;
 import de.codelix.emsbridge.messages.Texts;
@@ -8,7 +8,6 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.ZoneId;
 
 public class MotdListener implements Listener {
