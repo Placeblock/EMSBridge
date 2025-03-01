@@ -5,6 +5,7 @@ import de.codelix.emsbridge.command.impl.RegisterCommand;
 import de.codelix.emsbridge.command.impl.TeamCommand;
 import de.codelix.emsbridge.listener.PlayerListener;
 import de.codelix.emsbridge.listener.ZeromqListener;
+import de.codelix.emsbridge.motd.MotdListener;
 import de.codelix.emsbridge.service.EntityService;
 import de.codelix.emsbridge.service.TeamService;
 import de.codelix.emsbridge.storage.EntityPlayerMap;
@@ -52,5 +53,7 @@ public class EMSBridge extends JavaPlugin {
         new TeamCommand(this, this.entityService, this.teamService).register();
 
         new Thread(() -> new ZeromqListener(this.entityService, this.teamService).listen()).start();
+
+        this.getServer().getPluginManager().registerEvents(new MotdListener(), this);
     }
 }

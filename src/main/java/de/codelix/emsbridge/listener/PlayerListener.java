@@ -71,6 +71,7 @@ public class PlayerListener implements Listener {
             } else {
                 this.teamService.removePlayerFromTeamLocal(entity.getId());
             }
+            player.showTitle(Messages.TITLE);
             return;
         }
 

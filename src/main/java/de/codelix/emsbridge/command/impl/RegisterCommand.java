@@ -12,6 +12,8 @@ import de.codelix.emsbridge.gui.NameInputGUI;
 import de.codelix.emsbridge.messages.Messages;
 import de.codelix.emsbridge.messages.Texts;
 import de.codelix.emsbridge.service.EntityService;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,6 +54,7 @@ public class RegisterCommand extends PlayerPaperCommand {
         try {
             this.entityService.createEntity(p.getUniqueId(), name);
             p.sendMessage(Messages.ENTITY_CREATED);
+            p.showTitle(Messages.TITLE);
         } catch (EntityLoadException e) {
             p.sendMessage(Messages.ERROR_CHECK_REGISTERED(name));
             throw e;
