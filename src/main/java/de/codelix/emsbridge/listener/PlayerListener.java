@@ -72,6 +72,8 @@ public class PlayerListener implements Listener {
                 this.teamService.removePlayerFromTeamLocal(entity.getId());
             }
             player.showTitle(Messages.TITLE);
+
+            event.joinMessage(Texts.text("<color:gray>[<color:green>+<color:gray>] ").append(player.displayName()));
             return;
         }
 
@@ -82,6 +84,7 @@ public class PlayerListener implements Listener {
                 .title(Texts.text(introductionBook.getTitle()))
                 .author(Texts.text(introductionBook.getAuthor()))
                 .pages(pages));
+        event.joinMessage(Texts.text("<color:gray>[<color:green>+<color:gray>] ").append(player.displayName()));
     }
 
     @EventHandler
@@ -108,5 +111,6 @@ public class PlayerListener implements Listener {
     public void on(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         this.entityService.removeOnlinePlayer(uuid);
+        event.quitMessage(Texts.text("<color:gray>[<color:red>-<color:gray>] ").append(event.getPlayer().displayName()));
     }
 }
