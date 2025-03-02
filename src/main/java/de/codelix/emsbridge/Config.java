@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ public class Config {
     private final SqlDB sqlDb;
     private final InfluxDB influxDb;
     private final Books books;
-    private final LocalDateTime projectStart;
+    private final Date projectStart;
 
     public Config(ConfigurationSection section) {
         ConfigurationSection sqlDb = section.getConfigurationSection("sqldb");
@@ -41,7 +40,7 @@ public class Config {
         if (serializedProjectStart == null) {
             throw new IllegalArgumentException("Project start not found in config");
         }
-        this.projectStart = LocalDateTime.parse(serializedProjectStart, DateTimeFormatter.ISO_DATE_TIME);
+        this.projectStart = (Date) section.get("project-start");
     }
 
     public static class Books {

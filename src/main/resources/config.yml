@@ -10,6 +10,7 @@ influxdb:
   organization: ORG
   token: TOKEN
   bucket: BUCKET
+project-start: 2025-03-02T10:41:00+01:00
 
 books:
   introduction:

@@ -18,6 +18,8 @@ import de.codelix.emsbridge.storage.EntityPlayerMap;
 import de.codelix.emsbridge.storage.EntityPlayerRepository;
 import de.codelix.entitymanagementsystem.EMS;
 import lombok.Getter;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -29,6 +31,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -77,7 +81,7 @@ public class EMSBridge extends JavaPlugin {
         this.enableMetrics();
 
         this.getServer().getPluginManager().registerEvents(new MotdListener(), this);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::checkProjectStartTitles, 0L, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, this::checkProjectStartTitles, 0L, 20L);
     }
 
     private void connectInflux() {
@@ -106,16 +110,18 @@ public class EMSBridge extends JavaPlugin {
     }
 
     private void checkProjectStartTitles() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
-        LocalDateTime projectStart = this.cfg.getProjectStart();
-        Duration timeUntilProjectStart = Duration.between(now, projectStart);
+        Date now = Date.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
+        Date projectStart = this.cfg.getProjectStart();
+        Duration timeUntilProjectStart = Duration.between(now.toInstant(), projectStart.toInstant());
         long seconds = timeUntilProjectStart.getSeconds();
         if (seconds < 6 && seconds > 0) {
             this.getServer().showTitle(Title.title(Texts.text("<color:blue>Nostalgicraft"),
                     Texts.text(String.format("<color:green>%d", seconds))));
+            this.getServer().playSound(Sound.sound(Key.key("minecraft", "block.note_block.pling"), Sound.Source.AMBIENT, 0.5F, 1));
         }
         if (seconds == 0) {
-            this.getServer().showTitle(Title.title(Component.empty(), Texts.text("<color:green>Have fun!")));
+            this.getServer().showTitle(Title.title(Texts.text("<color:green>Have fun!"), Component.empty()));
+            this.getServer().playSound(Sound.sound(Key.key("minecraft", "block.note_block.pling"), Sound.Source.AMBIENT, 0.5F, 2));
         }
     }
 }

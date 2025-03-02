@@ -7,7 +7,7 @@ import net.kyori.adventure.title.Title;
 
 public class Messages {
 
-    public static final Title TITLE = Title.title(Texts.text("Nostalgicraft"), Component.empty());
+    public static final Title TITLE = Title.title(Texts.text("<color:blue><b>Nostalgicraft"), Component.empty());
 
     public static final Component REPORT = Texts.text("<b><color:red>Please report this to the admin!</color></b>");
     public static final Component ERROR_LOAD_ENTITY = Texts.text("<color:red>Failed to load player data.<newline>").append(REPORT);
