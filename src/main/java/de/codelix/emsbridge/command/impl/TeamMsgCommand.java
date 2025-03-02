@@ -6,6 +6,7 @@ import de.codelix.commandapi.paper.PlayerPaperCommand;
 import de.codelix.commandapi.paper.tree.builder.impl.DefaultPaperLiteralBuilder;
 import de.codelix.emsbridge.command.exceptions.MessageTooLongException;
 import de.codelix.emsbridge.command.messages.EMSDesign;
+import de.codelix.emsbridge.messages.Messages;
 import de.codelix.emsbridge.service.TeamService;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -25,15 +26,21 @@ public class TeamMsgCommand extends PlayerPaperCommand {
         );
     }
 
-    private void sendMessage(Player player, String message) throws MessageTooLongException {
+    private void sendMessage(Player player, String message) {
+        System.out.println(message);
         message = message.trim();
         if (message.isEmpty()) {
             player.sendMessage(this.getDesign().getHelpMessage(this, new DefaultPaperSource(player, null)));
             return;
         }
         if (message.length() > 2000) {
-            throw new MessageTooLongException(2000);
+            player.sendMessage(this.getDesign().getMessages().getMessage(new MessageTooLongException(2000)));
+            return;
         }
-        this.teamService.sendMessage(player.getUniqueId(), message);
+        try {
+            this.teamService.sendMessage(player.getUniqueId(), message);
+        } catch (RuntimeException ex) {
+            player.sendMessage(Messages.ERROR_SEND_TEAM_MESSAGE);
+        }
     }
 }

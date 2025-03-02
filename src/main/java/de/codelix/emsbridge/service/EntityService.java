@@ -7,6 +7,7 @@ import de.codelix.emsbridge.storage.EntityPlayerRepository;
 import de.codelix.entitymanagementsystem.EMS;
 import de.codelix.entitymanagementsystem.models.Entity;
 import de.codelix.entitymanagementsystem.models.Team;
+import de.codelix.entitymanagementsystem.models.Token;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -128,5 +129,9 @@ public class EntityService {
 
     public @Nullable UUID getPlayerUuidNullableLocal(int entityId) {
         return this.entityPlayerMap.getPlayerUUID(entityId);
+    }
+
+    public Token requestToken(int entityId) {
+        return this.ems.createToken(entityId).join();
     }
 }

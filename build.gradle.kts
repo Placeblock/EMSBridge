@@ -35,6 +35,8 @@ dependencies {
 
     // MySQL
     implementation("com.zaxxer:HikariCP:6.2.1")
+    // InfluxDB
+    implementation("com.influxdb:influxdb-client-java:7.2.0")
 
     // Commands
     implementation("de.codelix.commandapi:core:4.0.0-SNAPSHOT")
