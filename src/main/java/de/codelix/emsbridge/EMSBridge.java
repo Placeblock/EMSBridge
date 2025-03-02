@@ -1,11 +1,15 @@
 package de.codelix.emsbridge;
 
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.WriteApi;
 import de.codelix.emsbridge.command.impl.AccountCommand;
 import de.codelix.emsbridge.command.impl.RegisterCommand;
 import de.codelix.emsbridge.command.impl.TeamCommand;
 import de.codelix.emsbridge.command.impl.TeamMsgCommand;
 import de.codelix.emsbridge.listener.PlayerListener;
 import de.codelix.emsbridge.listener.ZeromqListener;
+import de.codelix.emsbridge.metrics.impl.*;
 import de.codelix.emsbridge.service.EntityService;
 import de.codelix.emsbridge.service.TeamService;
 import de.codelix.emsbridge.storage.EntityPlayerMap;
@@ -17,10 +21,16 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 @Getter
 public class EMSBridge extends JavaPlugin {
 
     public static EMSBridge INSTANCE;
+    public static InfluxDBClient INFLUX_CLIENT;
+    public static WriteApi INFLUX;
+    public static ScheduledExecutorService SCHEDULER;
 
     private Config cfg;
 
@@ -54,5 +64,33 @@ public class EMSBridge extends JavaPlugin {
         new TeamMsgCommand(this, this.teamService).register();
 
         new Thread(() -> new ZeromqListener(this.entityService, this.teamService).listen()).start();
+
+        this.connectInflux();
+        this.enableMetrics();
+    }
+
+    private void connectInflux() {
+        Config.InfluxDB db = this.cfg.getInfluxDb();
+        final String serverURL = "http://"+ db.getHost()+":"+db.getPort();
+        final char[] token = db.getToken().toCharArray();
+        INFLUX_CLIENT = InfluxDBClientFactory.create(serverURL, token, db.getOrganization(), db.getBucket());
+        if (!INFLUX_CLIENT.ping()) {
+            throw new IllegalStateException("InfluxDB connection failed");
+        }
+        INFLUX = INFLUX_CLIENT.makeWriteApi();
+        this.getLogger().info("Connected to InfluxDB");
+        SCHEDULER = Executors.newScheduledThreadPool(5);
+    }
+
+    private void enableMetrics() {
+        new TPSMetric(this.getServer()).enable();
+        new OnlinePlayersMetric(this.getServer()).enable();
+        new ChunksMetric(this.getServer()).enable();
+        new BlocksMetric().enable();
+        new PlayerHealthMetric().enable();
+        new DistanceTraveledMetric().enable();
+        new EntityDeathsMetric().enable();
+        new PlayerDeathsMetric().enable();
+        new EntitiesMetric(this.getServer()).enable();
     }
 }

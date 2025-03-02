@@ -1,7 +1,7 @@
 package de.codelix.emsbridge.metrics.impl;
 
 import com.influxdb.annotations.Column;
-import de.codelix.minecraftstatistics.metrics.AutoScheduledMetric;
+import de.codelix.emsbridge.metrics.AutoScheduledMetric;
 import org.bukkit.Server;
 import org.bukkit.World;
 

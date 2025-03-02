@@ -1,9 +1,15 @@
-db:
+sqldb:
   host: 127.0.0.1
   port: 3306
   database: DB
   username: USER
   password: PASSWORD
+influxdb:
+  host: 127.0.0.1
+  port: 3306
+  organization: ORG
+  token: TOKEN
+  bucket: BUCKET
 
 books:
   introduction:

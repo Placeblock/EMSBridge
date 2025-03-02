@@ -30,17 +30,19 @@ public class DistanceTraveledMetric extends EventMetric {
         if (event.isCancelled()) return;
         Player player = event.getPlayer();
         UUID playerUuid = player.getUniqueId();
+        Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
+        if (entityId == null) return;
         Location from = event.getFrom();
         Location to = event.getTo();
         double distance = from.distance(to);
-        Measurement measurement = new Measurement(Instant.now(), playerUuid, distance);
+        Measurement measurement = new Measurement(Instant.now(), entityId, distance);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
 
     @com.influxdb.annotations.Measurement(name = "distance_traveled")
     public record Measurement(
             @Column(timestamp = true) Instant time,
-            @Column(tag = true) UUID player_uuid,
+            @Column(tag = true) int entity_id,
             @Column double distance
     ) {}
 }

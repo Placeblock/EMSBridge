@@ -4,8 +4,6 @@ import com.influxdb.annotations.Column;
 import com.influxdb.client.domain.WritePrecision;
 import de.codelix.emsbridge.EMSBridge;
 import de.codelix.emsbridge.metrics.EventMetric;
-import de.codelix.minecraftstatistics.MinecraftStatistics;
-import de.codelix.minecraftstatistics.metrics.EventMetric;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -39,7 +37,9 @@ public class EntityDeathsMetric extends EventMetric {
         if (causingEntity instanceof Player player) {
             causingPlayerUUID = player.getUniqueId();
         }
-        Measurement measurement = new Measurement(Instant.now(), entityType, damageType, causingPlayerUUID, 1);
+        Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(causingPlayerUUID);
+        if (entityId == null) return;
+        Measurement measurement = new Measurement(Instant.now(), entityType, damageType, entityId, 1);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
 
@@ -48,7 +48,7 @@ public class EntityDeathsMetric extends EventMetric {
             @Column(timestamp = true) Instant time,
             @Column(tag = true) EntityType entityType,
             @Column(tag = true) NamespacedKey damageType,
-            @Column(tag = true) UUID player_uuid,
+            @Column(tag = true) int entity_id,
             @Column int count
     ) {}
 }

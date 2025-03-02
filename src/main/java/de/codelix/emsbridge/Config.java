@@ -12,19 +12,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Config {
     private final SqlDB sqlDb;
+    private final InfluxDB influxDb;
     private final Books books;
 
     public Config(ConfigurationSection section) {
-        ConfigurationSection db = section.getConfigurationSection("db");
-        if (db == null) {
+        ConfigurationSection sqlDb = section.getConfigurationSection("sqldb");
+        if (sqlDb == null) {
             throw new IllegalArgumentException("Database configuration not found");
         }
         ConfigurationSection books = section.getConfigurationSection("books");
         if (books == null) {
             throw new IllegalArgumentException("Books configuration not found");
         }
-        this.sqlDb = new SqlDB(db);
+        ConfigurationSection influxDb = section.getConfigurationSection("influxdb");
+        if (influxDb == null) {
+            throw new IllegalArgumentException("Influx Db configuration not found");
+        }
+        this.sqlDb = new SqlDB(sqlDb);
         this.books = new Books(books);
+        this.influxDb = new InfluxDB(influxDb);
     }
 
     public static class Books {

@@ -31,9 +31,11 @@ public class PlayerHealthMetric extends EventMetric {
         if (event.isCancelled() ||
                 !(event.getEntity() instanceof Player player)) return;
         UUID playerUuid = player.getUniqueId();
+        Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
+        if (entityId == null) return;
         double damage = event.getDamage();
         double newHealth = player.getHealth() - damage;
-        Measurement measurement = new Measurement(Instant.now(), playerUuid, damage, newHealth);
+        Measurement measurement = new Measurement(Instant.now(), entityId, damage, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
 
@@ -42,9 +44,11 @@ public class PlayerHealthMetric extends EventMetric {
         if (event.isCancelled() ||
             !(event.getEntity() instanceof Player player)) return;
         UUID playerUuid = player.getUniqueId();
+        Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
+        if (entityId == null) return;
         double delta = event.getAmount();
         double newHealth = player.getHealth() + delta;
-        Measurement measurement = new Measurement(Instant.now(), playerUuid, delta, newHealth);
+        Measurement measurement = new Measurement(Instant.now(), entityId, delta, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
 
@@ -52,15 +56,17 @@ public class PlayerHealthMetric extends EventMetric {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID playerUuid = player.getUniqueId();
+        Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
+        if (entityId == null) return;
         double newHealth = player.getHealth();
-        Measurement measurement = new Measurement(Instant.now(), playerUuid, 0, newHealth);
+        Measurement measurement = new Measurement(Instant.now(), entityId, 0, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
 
     @com.influxdb.annotations.Measurement(name = "player_health")
     public record Measurement(
             @Column(timestamp = true) Instant time,
-            @Column(tag = true) UUID player_uuid,
+            @Column(tag = true) int entity_id,
             @Column double delta,
             @Column double health
     ) {}
