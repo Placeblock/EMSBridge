@@ -34,7 +34,7 @@ public class PlayerHealthMetric extends EventMetric {
         Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
         if (entityId == null) return;
         double damage = event.getDamage();
-        double newHealth = player.getHealth() - damage;
+        double newHealth = this.getHealth(player.getHealth() - damage);
         Measurement measurement = new Measurement(Instant.now(), entityId, damage, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
@@ -47,7 +47,7 @@ public class PlayerHealthMetric extends EventMetric {
         Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
         if (entityId == null) return;
         double delta = event.getAmount();
-        double newHealth = player.getHealth() + delta;
+        double newHealth = this.getHealth(player.getHealth() + delta);
         Measurement measurement = new Measurement(Instant.now(), entityId, delta, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
     }
@@ -58,9 +58,14 @@ public class PlayerHealthMetric extends EventMetric {
         UUID playerUuid = player.getUniqueId();
         Integer entityId = EMSBridge.INSTANCE.getEntityService().getEntityIdNullableLocal(playerUuid);
         if (entityId == null) return;
-        double newHealth = player.getHealth();
+        double newHealth = this.getHealth(player.getHealth());
         Measurement measurement = new Measurement(Instant.now(), entityId, 0, newHealth);
         EMSBridge.INFLUX.writeMeasurement(WritePrecision.NS, measurement);
+    }
+
+    private double getHealth(double health) {
+        health = Math.min(20, Math.max(0, health));
+        return Math.round(health*2)/2D;
     }
 
     @com.influxdb.annotations.Measurement(name = "player_health")
